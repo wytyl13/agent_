@@ -1,0 +1,14 @@
+agent/config/yaml/sql_config.yaml
+agent/config/yaml/search_config.yaml
+agent/config/yaml/postgresql_config.yaml
+.env
+chainlit.md
+cert
+logs
+models
+upload_dir
+retrieval_data
+retrieval_storage
+__pycache__/
+*.pyc
+*.pyo
