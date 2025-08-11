@@ -32,7 +32,6 @@ from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.core import QueryBundle
 from rank_bm25 import BM25Okapi
 from pathlib import Path
-from modelscope import snapshot_download
 from tqdm.auto import tqdm as TqdmProgress
 
 from agent.base.base_tool import tool
