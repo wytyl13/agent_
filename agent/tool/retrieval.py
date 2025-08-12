@@ -40,53 +40,12 @@ from agent.base.base_tool import tool
 ROOT_DIRECTORY = Path(__file__).parent.parent.parent
 DEFAULT_RETRIEVAL_DATA_PATH = str(ROOT_DIRECTORY / "retrieval_data")
 DEFAULT_RETRIEVAL_STORAGE_PATH = str(ROOT_DIRECTORY / "retrieval_storage")
-DEFAULT_EMBEDDING_MODEL = str(ROOT_DIRECTORY / "models" / "embedding" / "bge-large-zh-v1.5")
+DEFAULT_EMBEDDING_MODEL = str(ROOT_DIRECTORY / "models" / "embedding" / "AI-ModelScope" / "bge-large-zh-v1.5")
 
 
 
 
 
-def ensure_model_downloaded():
-    """确保模型下载成功"""
-    model_path = Path(DEFAULT_EMBEDDING_MODEL)
-    # 如果模型已存在，直接返回
-    if model_path.exists():
-        # 检查文件夹是否有内容
-        files = list(model_path.iterdir())
-        if files:
-            # 进一步检查是否有模型文件（至少包含config.json或model文件）
-            has_model_files = any(
-                f.name in ['config.json', 'pytorch_model.bin', 'model.safetensors', 
-                          'tokenizer.json', 'tokenizer_config.json'] 
-                for f in files if f.is_file()
-            )
-            if has_model_files:
-                print(f"模型已存在: {model_path}")
-                return
-            else:
-                print(f"模型文件夹存在但缺少模型文件，重新下载...")
-        else:
-            print(f"模型文件夹为空，重新下载...")
-    else:
-        print(f"模型文件夹不存在，开始下载...")
-    
-    # 如果文件夹存在但为空或不完整，先清理
-    if model_path.exists():
-        import shutil
-        shutil.rmtree(model_path)
-    
-    # 下载模型
-    print("正在下载模型...")
-    model_path.mkdir(parents=True, exist_ok=True)
-    
-    snapshot_download(
-        repo_id="BAAI/bge-large-zh-v1.5",
-        local_dir=str(model_path),
-    )
-    print(f"模型下载完成: {model_path}")
-
-# 在程序启动时调用
-ensure_model_downloaded()
 
 
 
@@ -163,13 +122,7 @@ class Retrieval:
         try:
             self.embed_model = HuggingFaceEmbedding(model_name=DEFAULT_EMBEDDING_MODEL)
         except Exception as e:
-            # 下载模型
-            print("正在下载模型...")
-            snapshot_download(
-                repo_id="BAAI/bge-large-zh-v1.5",
-                local_dir=DEFAULT_EMBEDDING_MODEL,
-            )
-            print(f"模型下载完成: {DEFAULT_EMBEDDING_MODEL}")
+            print(f"模型加载失败: {DEFAULT_EMBEDDING_MODEL}")
         self.line_based_chunk = False if not hasattr(self, 'line_based_chunk') else self.line_based_chunk
 
         # 使用setting创建服务上下文
@@ -651,7 +604,7 @@ class Retrieval:
                         self.logger.error(traceback.format_exc())
             except Exception as e:
                 self.logger.error(f"从动态文本进行BM25检索失败: {str(e)}")
-
+                import traceback
                 self.logger.error(traceback.format_exc())
     
         # 处理静态索引

@@ -267,8 +267,9 @@ class PlanningAgentCommunityAiAdmin:
                     return
                     # return False, tool_ret, chat_history
                 
-                
-                tool_ret = await the_tool.execute(**action_input)
+                tool_ret = ""
+                async for chunk in the_tool.execute(**action_input):
+                        tool_ret += chunk
                 self.logger.info(f"---执行tool结果... ...\n{tool_ret}")
                 
                 # Tool executed successfully

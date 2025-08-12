@@ -33,11 +33,11 @@ fi
 
 check_and_kill_port() {
     local port=$1
-    local pid=$(sudo lsof -t -i :$port)
+    local pid=$(lsof -t -i :$port)
 
     if [ -n "$pid" ]; then
         echo "端口 $port 已被占用，正在终止进程 $pid"
-        sudo kill $pid
+        kill $pid
     else
         echo "端口 $port 未被占用"
     fi
@@ -60,7 +60,7 @@ if [ ! -d "$LOG_PATH" ]; then
     # 目录不存在，创建它
     mkdir -p "$LOG_PATH"
 fi
-
+python -m api.table.init_tables
 echo "日志文件路径: $LOG_FILE"
 cd "$PROJECT_ROOT" || { echo "无法切换到项目目录: $PROJECT_ROOT"; exit 1; }
 nohup python -m api.server.main_server -p $API_PORT > "$LOG_FILE" 2>&1 &
